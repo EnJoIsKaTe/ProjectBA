@@ -1,44 +1,40 @@
-import javax.swing.*;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 public class Main {
+
+    private static MainFrame _mainFrame;
+
     public static void main(String[] args) throws IOException {
 
         // Spiel wird gestartet
 //        Game.CreatePlayers();
 
         // Fenster wird erzeugt
-        JFrame main = new MainFrame();
 
         Player paul = new VirtualPlayer("Paul");
         Player karl = new VirtualPlayer("Egon");
         Player ich = new RealPlayer("Ich");
 
-        Game g = new Game();
-        g.addPlayer(paul);
-        g.addPlayer(karl);
-        g.addPlayer(ich);
+        Controller controller = new Controller();
+        _mainFrame = new MainFrame(controller);
 
-        g.CreateCards();
-        g.Shuffle(Game.cardDeck);
-        g.DealCards(Game.players);
-        MainFrame.initialPlayerCards(ich.cardsOnHand);
+        Game game  = new Game(controller);
+        controller.initController(game, _mainFrame);
+
+        game.addPlayer(0, paul);
+        game.addPlayer(1, karl);
+        game.addPlayer(2, ich);
+
+        controller.CreateCards();
+        game.Shuffle();
+        controller.DealCards();
+
+        _mainFrame.repaintPlayerCards(ich.cardsOnHand);
 
         // Erste Karte aufdecken
-        g.uncoverFirstCard();
+        controller.uncoverFirstCard();
 
-        InputStreamReader isr = new InputStreamReader(System.in);
-        BufferedReader br = new BufferedReader(isr);
-        String eingabe = "";
-        int count = 1;
-        while(!eingabe.equals("n")){
-            System.out.println("RUNDE: " + count);
-            count++;
-            g.playRound(g.players);
-            System.out.println("Weiter? (ja = Enter; nein = n)");
-            eingabe = br.readLine();
-        }
+        controller.playRound();
+
     }
 }

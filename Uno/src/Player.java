@@ -21,26 +21,7 @@ public class Player {
     }
 
     /**
-     * Prüft, ob Karte gelegt werden kann, wenn ja, wird sie gelegt
-     */
-    public void play(){
-    }
-
-    /**
      * Spieler zieht Karte
      */
-    public void drawCard(){
-        if(Game.cardDeck.size() < 1)
-        {
-            for(int i = 0; i < Game.cardStack.size(); i++)
-            {
-                Game.cardDeck.add(Game.cardStack.get(i));
-            }
-            Game.cardStack.clear();
-            Collections.shuffle(Game.cardDeck);
-        }
-        UnoCard drawedCard = Game.cardDeck.get(0);
-        cardsOnHand.add(drawedCard);
-        Game.cardDeck.remove(drawedCard);
-    }
+
 }
