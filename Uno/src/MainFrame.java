@@ -1,27 +1,38 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.util.*;
+
+/**
+ * MainFrame class of the GUI
+ */
 
 public class MainFrame extends JFrame {
     Dimension mainSize = new Dimension(400, 400);
     ImageIcon deckIcon;
     static JLabel stackLabel;
     static JPanel bottomPanel;
+    static JPanel topPanel;
+    static JPanel mainPanel;
+    static Controller controller;
 
-    public MainFrame() {
+    /**
+     * Standard Konstruktor des MainFrame
+     * Baut die GUI auf und verbindet sie mit dem Controller
+     * @param controller Controller Objekt, der zur Steuerung verwendet werden soll
+     */
+    public MainFrame(Controller controller) {
+
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 //        setLayout(new GridLayout(2,1,10,10));
         setLayout(new BorderLayout(10, 10));
-        JPanel mainPanel = new JPanel(new GridLayout(2, 1, 10, 10));
+        mainPanel = new JPanel(new GridLayout(2, 1, 10, 10));
+
         add(mainPanel, BorderLayout.CENTER);
 
         setTitle("Uno");
         setPreferredSize(mainSize);
-        JPanel topPanel = new JPanel();
+        topPanel = new JPanel();
+
         topPanel.setLayout(new GridLayout(1, 3, 10, 10));
         bottomPanel = new JPanel();
 //        bottomPanel.setBackground(Color.DARK_GRAY);
@@ -32,47 +43,22 @@ public class MainFrame extends JFrame {
 //        JPanel stackPanel = new JPanel();
         stackLabel = new JLabel("leer");
 
+        this.controller = controller;
+
         /**
          * Wird deckButton gedrückt, wird eine Karte gezogen
          */
-        JButton deckButton = new JButton();
+        //final JButton deckButton = new JButton();
+        DrawButton deckButton = new DrawButton();
+
         deckIcon = new ImageIcon(getClass().getResource("images/Back1.png"));
         Image img = deckIcon.getImage();
         Image newimg = img.getScaledInstance(50, 100,
                 java.awt.Image.SCALE_SMOOTH);
         deckIcon = new ImageIcon(newimg);
         deckButton.setIcon(deckIcon);
-        deckButton.addComponentListener(new ComponentListener() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                Image img = deckIcon.getImage();
-                Image newimg = img.getScaledInstance(deckButton.getWidth(), deckButton.getHeight(),
-                        java.awt.Image.SCALE_SMOOTH);
-                deckIcon = new ImageIcon(newimg);
-                deckButton.setIcon(deckIcon);
-            }
 
-            @Override
-            public void componentMoved(ComponentEvent e) {
-
-            }
-
-            @Override
-            public void componentShown(ComponentEvent e) {
-
-            }
-
-            @Override
-            public void componentHidden(ComponentEvent e) {
-
-            }
-        });
-        deckButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Game.actualPlayer.drawCard();
-            }
-        });
+        deckButton.addMouseListener(controller);
 
 //        stackPanel.add(stackButton);
 //        stackPanel.setBackground(Color.GREEN);
@@ -86,16 +72,28 @@ public class MainFrame extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * Updated den Kartenstack und gibt an welche Karte oben liegt
+     * @param topCard Liegende oberste Karte
+     */
     public static void refreshStack(UnoCard topCard){
         stackLabel.setText(topCard.get_color() + ", " + topCard.get_number());
     }
 
-    public static void initialPlayerCards(ArrayList<UnoCard> playerCards){
+    /**
+     * Repaints the GUI area where that represents the players hand / cards
+     * @param playerCards ArrayList of Cards the player is holding on his hand
+     */
+    public void repaintPlayerCards(ArrayList<UnoCard> playerCards){
+        bottomPanel.removeAll();
         bottomPanel.setLayout(new GridLayout(1,playerCards.size()));
+
         for(UnoCard c : playerCards){
-            JButton playerCard = new JButton();
+            PlayerCardButton playerCard = new PlayerCardButton(c);
+            playerCard.addMouseListener(controller);
             playerCard.setText(c.get_color() + ", " + c.get_number());
             bottomPanel.add(playerCard);
         }
+        bottomPanel.repaint();
     }
 }
