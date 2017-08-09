@@ -10,9 +10,11 @@ public class UnoCard {
         return _number;
     }
 
+
     public String get_color() {
         return _color;
     }
+
 
     public UnoCard(int _number, String _color) {
         this._number = _number;

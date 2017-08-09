@@ -5,6 +5,7 @@ import java.util.*;
 /**
  * MainFrame class of the GUI
  */
+
 public class MainFrame extends JFrame {
     Dimension mainSize = new Dimension(400, 400);
     ImageIcon deckIcon;
@@ -25,11 +26,13 @@ public class MainFrame extends JFrame {
 //        setLayout(new GridLayout(2,1,10,10));
         setLayout(new BorderLayout(10, 10));
         mainPanel = new JPanel(new GridLayout(2, 1, 10, 10));
+
         add(mainPanel, BorderLayout.CENTER);
 
         setTitle("Uno");
         setPreferredSize(mainSize);
         topPanel = new JPanel();
+
         topPanel.setLayout(new GridLayout(1, 3, 10, 10));
         bottomPanel = new JPanel();
 //        bottomPanel.setBackground(Color.DARK_GRAY);
@@ -47,6 +50,7 @@ public class MainFrame extends JFrame {
          */
         //final JButton deckButton = new JButton();
         DrawButton deckButton = new DrawButton();
+
         deckIcon = new ImageIcon(getClass().getResource("images/Back1.png"));
         Image img = deckIcon.getImage();
         Image newimg = img.getScaledInstance(50, 100,
