@@ -1,7 +1,7 @@
 import javax.swing.*;
 
 /**
- * Created by cs15bv1 on 03.08.17.
+ * Button that is used to draw a Card
  */
 public class DrawButton extends JButton {
 

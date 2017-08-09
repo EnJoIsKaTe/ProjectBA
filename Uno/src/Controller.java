@@ -2,17 +2,31 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Collections;
 
+/**
+ * Class that contains all the logic for the Application
+ * It connects the model and the View following the MVC - Design Pattern
+ */
 public class Controller implements MouseListener {
 
     private Game _game;
     private MainFrame _mainFrame;
 
+    /**
+     * Init Methode des Controller, macht ihn mit dem Model und der View bekannt
+     * @param game Game Objekt, das das Model der Anwendung darstellt
+     * @param mainFrame MainFrame Objekt, das die View der Anwendung darstellt
+     */
     public void initController(Game game, MainFrame mainFrame){
 
         _game = game;
         _mainFrame = mainFrame;
     }
 
+    /**
+     * Klick- Ereignis, das danach unterscheidet ob der Ziehen- Button geklickt wurde oder
+     * ob eine Karte gelegt werden soll
+     * @param mouseEvent Klick Event
+     */
     @Override
     public void mouseClicked(MouseEvent mouseEvent) {
 
@@ -174,6 +188,9 @@ public class Controller implements MouseListener {
         }
     }
 
+    /**
+     * Erstellt alle vorgesehenen Karten und fügt sie dem verfügbaren Kartendeck hinzu
+     */
     public void CreateCards() {
         // zwei Sätze Karten werden erstellt mit je 4 Farben und Zahlen 0 - 9
         for (int h = 0; h < 2; h++) {
@@ -196,6 +213,9 @@ public class Controller implements MouseListener {
         _game.cardDeck.add(new UnoCard(0, "yellow"));
     }
 
+    /**
+     * Aufdecken der ersten Karte
+     */
     public void uncoverFirstCard(){
         _game.actualCard = _game.cardDeck.get(0);
         _game.cardStack.add(_game.cardDeck.get(0));
@@ -203,6 +223,9 @@ public class Controller implements MouseListener {
         MainFrame.refreshStack(_game.actualCard);
     }
 
+    /**
+     * Karten werden an die Spieler ausgegeben
+     */
     public void DealCards() {
         for (Player p : _game.players) {
             for (int i = 0; i < 7; i++) {

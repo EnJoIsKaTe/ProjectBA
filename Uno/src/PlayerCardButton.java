@@ -1,7 +1,7 @@
 import javax.swing.*;
 
 /**
- * Created by cs15bv1 on 03.08.17.
+ * Button that is used to represent and play a card
  */
 public class PlayerCardButton extends JButton {
 

@@ -1,6 +1,8 @@
 import java.util.ArrayList;
-import java.util.Collections;
 
+/**
+ * Class that represents a Player
+ */
 public class Player {
 
     private String _name;
@@ -14,14 +16,12 @@ public class Player {
         this._name = _name;
     }
 
-    //Konstruktor
+    /**
+     * Standard Konstruktor
+     * @param name Name of the Player
+     */
     public Player(String name) {
         this._name = name;
         cardsOnHand = new ArrayList<>();
     }
-
-    /**
-     * Spieler zieht Karte
-     */
-
 }
