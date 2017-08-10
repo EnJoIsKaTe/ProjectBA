@@ -68,7 +68,18 @@ public class MainFrame extends JFrame {
 //        topPanel.add(stackPanel);
         topPanel.add(stackLabel);
         topPanel.add(deckButton);
-        pack();
+//        pack();
+
+        // get the screen size as a java dimension
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+//      get 2/3 of the height, and 2/3 of the width
+        int height = screenSize.height * 2 / 3;
+        int width = screenSize.width * 1 / 2;
+
+//      set the jframe height and width
+        this.setMinimumSize(new Dimension(width, height));
+
         setVisible(true);
     }
 
@@ -95,5 +106,9 @@ public class MainFrame extends JFrame {
             bottomPanel.add(playerCard);
         }
         bottomPanel.repaint();
+    }
+
+    public void Message(String message){
+        this.stackLabel.setText(message);
     }
 }

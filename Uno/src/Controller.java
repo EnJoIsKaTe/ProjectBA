@@ -147,6 +147,9 @@ public class Controller implements MouseListener {
             if(_game.actualPlayer.cardsOnHand.size() < 1)
             {
                 System.out.println("GEWONNEN!!!!!!!!!");
+                String message = _game.actualPlayer.get_name();
+                message += " hat gewonnen!";
+                _mainFrame.Message(message);
                 return;
             }
             System.out.println("Vor Kartenlegen: " + _game.actualPlayer.cardsOnHand.size() + " Karten");
