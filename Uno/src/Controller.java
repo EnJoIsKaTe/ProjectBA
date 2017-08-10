@@ -20,7 +20,7 @@ public class Controller implements MouseListener {
         // Karte ziehen
         if (mouseEvent.getSource() instanceof DrawButton){
             drawCard();
-            _mainFrame.repaintPlayerCards(_game.actualPlayer.cardsOnHand);
+//            _mainFrame.repaintPlayerCards(_game.actualPlayer.cardsOnHand);
 
             playRound();
         }
@@ -35,9 +35,11 @@ public class Controller implements MouseListener {
                 if (realPlay(unoCard, (RealPlayer)_game.actualPlayer)){
                     playRound();
                 }
-                _mainFrame.repaintPlayerCards(_game.actualPlayer.cardsOnHand);
+//                _mainFrame.repaintPlayerCards(_game.actualPlayer.cardsOnHand);
             }
         }
+        _mainFrame.repaintPlayerCards(_game.actualPlayer.cardsOnHand);
+        _mainFrame.setVisible(true);
     }
 
     /**
