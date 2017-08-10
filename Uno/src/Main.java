@@ -6,11 +6,6 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        // Spiel wird gestartet
-//        Game.CreatePlayers();
-
-        // Fenster wird erzeugt
-
         Player paul = new VirtualPlayer("Paul");
         Player karl = new VirtualPlayer("Egon");
         Player ich = new RealPlayer("Ich");
@@ -35,6 +30,5 @@ public class Main {
         controller.uncoverFirstCard();
 
         controller.playRound();
-
     }
 }

@@ -7,7 +7,7 @@ public class Controller implements MouseListener {
     private Game _game;
     private MainFrame _mainFrame;
 
-    public void initController(Game game, MainFrame mainFrame) {
+    public void initController(Game game, MainFrame mainFrame){
 
         _game = game;
         _mainFrame = mainFrame;
@@ -18,33 +18,32 @@ public class Controller implements MouseListener {
 
         // Unterscheiden ob Karte Ziehen oder Karte legen
         // Karte ziehen
-        if (mouseEvent.getSource() instanceof DrawButton) {
+        if (mouseEvent.getSource() instanceof DrawButton){
             drawCard();
-//            _mainFrame.repaintPlayerCards(_game.actualPlayer.cardsOnHand);
+            _mainFrame.repaintPlayerCards(_game.actualPlayer.cardsOnHand);
+
             playRound();
         }
 
         // Karte legen
-        if (mouseEvent.getSource() instanceof PlayerCardButton) {
+        if (mouseEvent.getSource() instanceof PlayerCardButton){
 
-            PlayerCardButton playerCardButton = (PlayerCardButton) mouseEvent.getSource();
+            PlayerCardButton playerCardButton = (PlayerCardButton)mouseEvent.getSource();
             UnoCard unoCard = playerCardButton.get_unoCard();
 
             if (_game.actualPlayer instanceof RealPlayer) {
-                if (realPlay(unoCard, (RealPlayer) _game.actualPlayer)) {
+                if (realPlay(unoCard, (RealPlayer)_game.actualPlayer)){
                     playRound();
                 }
+                _mainFrame.repaintPlayerCards(_game.actualPlayer.cardsOnHand);
             }
         }
-        _mainFrame.repaintPlayerCards(_game.actualPlayer.cardsOnHand);
-        _mainFrame.repaint();
     }
 
     /**
      * Auspielen einer Karte durch einen realen Spieler
-     *
      * @param cardToPlay Karte die ausgespielt werden soll
-     * @param rPlayer    Spieler Objekt des menschlichen Spielers
+     * @param rPlayer Spieler Objekt des menschlichen Spielers
      * @return
      */
     public boolean realPlay(UnoCard cardToPlay, RealPlayer rPlayer) {
@@ -55,16 +54,16 @@ public class Controller implements MouseListener {
         System.out.println("Zu spielende Karte: " + cardToPlay.get_color() + ", " + cardToPlay.get_number());
 
         boolean isOnHand = false;
-        for (UnoCard c : rPlayer.cardsOnHand) {
-            if (cardToPlay.equals(c)) {
+        for(UnoCard c : rPlayer.cardsOnHand){
+            if(cardToPlay.equals(c)){
                 cardToPlay = c;
                 isOnHand = true;
             }
         }
 
-        if (isOnHand) {
+        if(isOnHand){
             System.out.println("Auf Hand");
-            if (_game.actualCard.fits(cardToPlay)) {
+            if(_game.actualCard.fits(cardToPlay)){
                 System.out.println("Karte passt");
                 _game.actualCard = cardToPlay;
                 MainFrame.refreshStack(_game.actualCard);
@@ -79,7 +78,8 @@ public class Controller implements MouseListener {
                 System.out.println("Bereits " + _game.cardStack.size() + " Karten auf Haufen");
                 System.out.println();
                 validPlay = true;
-            } else {
+            }
+            else{
                 validPlay = false;
                 System.out.println("Karte passt nicht. Bitte wählen Sie erneut oder Ziehen Sie eine Karte");
             }
@@ -89,7 +89,6 @@ public class Controller implements MouseListener {
 
     /**
      * Auspielen einer Karte durch einen virtuellen Spieler
-     *
      * @param vPlayer
      */
     public void virtualPlay(VirtualPlayer vPlayer) {
@@ -113,9 +112,11 @@ public class Controller implements MouseListener {
     /**
      * Karte ziehen
      */
-    public void drawCard() {
-        if (_game.cardDeck.size() < 1) {
-            for (int i = 0; i < _game.cardStack.size(); i++) {
+    public void drawCard(){
+        if(_game.cardDeck.size() < 1)
+        {
+            for(int i = 0; i < _game.cardStack.size(); i++)
+            {
                 _game.cardDeck.add(_game.cardStack.get(i));
             }
             _game.cardStack.clear();
@@ -129,19 +130,20 @@ public class Controller implements MouseListener {
     /**
      * Spielen einer Runde, wenn der menschliche Spieler dran ist wird aus der Methode gesprungen
      */
-    public void playRound() {
-
+    public void playRound(){
         // Spiele eine Runde
-        for (int position = 0; position < _game.players.size(); position++) {
+        for(int position = 0; position < _game.players.size(); position++) {
             _game.actualPlayer = _game.players.get(position);
             System.out.print("Liegende Karte: ");
             System.out.println(_game.actualCard.get_color() + ", " + _game.actualCard.get_number());
             System.out.print("Spieler: ");
             System.out.println(_game.actualPlayer.get_name());
-            if (_game.actualPlayer.cardsOnHand.size() < 2 && _game.actualPlayer.cardsOnHand.size() > 0) {
+            if(_game.actualPlayer.cardsOnHand.size() < 2 && _game.actualPlayer.cardsOnHand.size() > 0)
+            {
                 System.out.println("UNO!!!!");
             }
-            if (_game.actualPlayer.cardsOnHand.size() < 1) {
+            if(_game.actualPlayer.cardsOnHand.size() < 1)
+            {
                 System.out.println("GEWONNEN!!!!!!!!!");
                 return;
             }
@@ -150,18 +152,17 @@ public class Controller implements MouseListener {
                 System.out.println(c.get_color() + ", " + c.get_number());
             }
 
-
             // Prüfe, ob Karte passt
 
-            if (_game.actualPlayer instanceof VirtualPlayer) {
-                virtualPlay((VirtualPlayer) _game.actualPlayer);
+            if (_game.actualPlayer instanceof VirtualPlayer)
+            {
+                virtualPlay((VirtualPlayer)_game.actualPlayer);
             }
 
             // bricht hier ab wenn es ein echter Spieler ist und wartet auf das Event
-            else if (_game.actualPlayer instanceof RealPlayer) {
+            else if (_game.actualPlayer instanceof RealPlayer){
                 return;
             }
-//            _mainFrame.repaintPlayerCards(_game.actualPlayer.cardsOnHand);
 
             System.out.println("Nach Kartenlegen: " + _game.actualPlayer.cardsOnHand.size() + " Karten");
             for (UnoCard c : _game.actualPlayer.cardsOnHand) {
@@ -170,8 +171,6 @@ public class Controller implements MouseListener {
             System.out.println("Noch " + _game.cardDeck.size() + " Karten auf Deck");
             System.out.println("Bereits " + _game.cardStack.size() + " Karten auf Haufen");
             System.out.println();
-
-//            _mainFrame.repaintPlayerCards(_game.actualPlayer.cardsOnHand);
         }
     }
 
@@ -197,7 +196,7 @@ public class Controller implements MouseListener {
         _game.cardDeck.add(new UnoCard(0, "yellow"));
     }
 
-    public void uncoverFirstCard() {
+    public void uncoverFirstCard(){
         _game.actualCard = _game.cardDeck.get(0);
         _game.cardStack.add(_game.cardDeck.get(0));
         _game.cardDeck.remove(0);
