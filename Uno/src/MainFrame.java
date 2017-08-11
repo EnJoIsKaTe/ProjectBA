@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -13,11 +15,14 @@ public class MainFrame extends JFrame {
     static JPanel bottomPanel;
     static JPanel topPanel;
     static JPanel mainPanel;
+
+    public JPanel outputPanel;
     static Controller controller;
 
     /**
      * Standard Konstruktor des MainFrame
      * Baut die GUI auf und verbindet sie mit dem Controller
+     *
      * @param controller Controller Objekt, der zur Steuerung verwendet werden soll
      */
     public MainFrame(Controller controller) {
@@ -38,8 +43,8 @@ public class MainFrame extends JFrame {
 //        bottomPanel.setBackground(Color.DARK_GRAY);
         mainPanel.add(topPanel);
         mainPanel.add(bottomPanel);
-        JPanel ausgabePanel = new JPanel();
-        ausgabePanel.setBackground(Color.BLUE);
+        outputPanel = new JPanel();
+        outputPanel.setBackground(Color.BLUE);
 //        JPanel stackPanel = new JPanel();
         stackLabel = new JLabel("leer");
 
@@ -64,11 +69,12 @@ public class MainFrame extends JFrame {
 //        stackPanel.setBackground(Color.GREEN);
 //        JPanel deckPanel = new JPanel();
 //        deckPanel.setBackground(Color.YELLOW);
-        topPanel.add(ausgabePanel);
+        topPanel.add(outputPanel);
 //        topPanel.add(stackPanel);
         topPanel.add(stackLabel);
         topPanel.add(deckButton);
 //        pack();
+
 
         // get the screen size as a java dimension
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -85,21 +91,25 @@ public class MainFrame extends JFrame {
 
     /**
      * Updated den Kartenstack und gibt an welche Karte oben liegt
+     *
      * @param topCard Liegende oberste Karte
      */
-    public static void refreshStack(UnoCard topCard){
+    public void refreshStack(UnoCard topCard) {
+
         stackLabel.setText(topCard.get_color() + ", " + topCard.get_number());
+        setColorOfUpperCard(topCard);
     }
 
     /**
      * Repaints the GUI area where that represents the players hand / cards
+     *
      * @param playerCards ArrayList of Cards the player is holding on his hand
      */
-    public void repaintPlayerCards(ArrayList<UnoCard> playerCards){
+    public void repaintPlayerCards(ArrayList<UnoCard> playerCards) {
         bottomPanel.removeAll();
-        bottomPanel.setLayout(new GridLayout(1,playerCards.size()));
+        bottomPanel.setLayout(new GridLayout(1, playerCards.size()));
 
-        for(UnoCard c : playerCards){
+        for (UnoCard c : playerCards) {
             PlayerCardButton playerCard = new PlayerCardButton(c);
             playerCard.addMouseListener(controller);
             playerCard.setText(c.get_color() + ", " + c.get_number());
@@ -108,7 +118,28 @@ public class MainFrame extends JFrame {
         bottomPanel.repaint();
     }
 
-    public void Message(String message){
+    public void Message(String message) {
         this.stackLabel.setText(message);
+    }
+
+    /**
+     * Passt die Farbe des Feldes in der Oberfläche der Farbe der liegenden Karte an.
+     *
+     * @param unoCard Karte an deren Farbe das Feld in der Oberfläche angepasst werden soll
+     */
+    private void setColorOfUpperCard(UnoCard unoCard) {
+
+        Color color;
+        try {
+            Field field = Class.forName("java.awt.Color").getField(unoCard.get_color());
+            color = (Color) field.get(null);
+        } catch (Exception e) {
+            color = null; // Not defined
+            e.printStackTrace();
+        }
+
+        outputPanel.setBackground(color);
+        outputPanel.repaint();
+        outputPanel.setVisible(true);
     }
 }

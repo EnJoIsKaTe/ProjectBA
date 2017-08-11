@@ -1,5 +1,7 @@
+import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 
 public class Controller implements MouseListener {
@@ -11,6 +13,7 @@ public class Controller implements MouseListener {
 
         _game = game;
         _mainFrame = mainFrame;
+
     }
 
     @Override
@@ -20,7 +23,6 @@ public class Controller implements MouseListener {
         // Karte ziehen
         if (mouseEvent.getSource() instanceof DrawButton){
             drawCard();
-//            _mainFrame.repaintPlayerCards(_game.actualPlayer.cardsOnHand);
 
             playRound();
         }
@@ -35,7 +37,6 @@ public class Controller implements MouseListener {
                 if (realPlay(unoCard, (RealPlayer)_game.actualPlayer)){
                     playRound();
                 }
-//                _mainFrame.repaintPlayerCards(_game.actualPlayer.cardsOnHand);
             }
         }
         _mainFrame.repaintPlayerCards(_game.actualPlayer.cardsOnHand);
@@ -48,7 +49,7 @@ public class Controller implements MouseListener {
      * @param rPlayer Spieler Objekt des menschlichen Spielers
      * @return
      */
-    public boolean realPlay(UnoCard cardToPlay, RealPlayer rPlayer) {
+    public boolean realPlay(UnoCard cardToPlay, RealPlayer rPlayer){
 
         // wird true, wenn die Karte passt
         boolean validPlay = false;
@@ -68,7 +69,7 @@ public class Controller implements MouseListener {
             if(_game.actualCard.fits(cardToPlay)){
                 System.out.println("Karte passt");
                 _game.actualCard = cardToPlay;
-                MainFrame.refreshStack(_game.actualCard);
+                _mainFrame.refreshStack(_game.actualCard);
                 _game.cardStack.add(_game.actualCard);
                 rPlayer.cardsOnHand.remove(cardToPlay);
 
@@ -94,11 +95,23 @@ public class Controller implements MouseListener {
      * @param vPlayer
      */
     public void virtualPlay(VirtualPlayer vPlayer) {
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                _mainFrame.refreshStack(_game.actualCard);
+
+            }
+        };
+
         boolean cardFits = false;
         for (UnoCard c : vPlayer.cardsOnHand) {
             if (_game.actualCard.fits(c)) {
                 _game.actualCard = c;
-                MainFrame.refreshStack(_game.actualCard);
+                //_mainFrame.refreshStack(_game.actualCard);
+
+                SwingUtilities.invokeLater(runnable);
+
                 _game.cardStack.add(_game.actualCard);
                 vPlayer.cardsOnHand.remove(_game.actualCard);
                 cardFits = true;
@@ -176,6 +189,8 @@ public class Controller implements MouseListener {
             System.out.println("Noch " + _game.cardDeck.size() + " Karten auf Deck");
             System.out.println("Bereits " + _game.cardStack.size() + " Karten auf Haufen");
             System.out.println();
+
+
         }
     }
 
@@ -205,7 +220,7 @@ public class Controller implements MouseListener {
         _game.actualCard = _game.cardDeck.get(0);
         _game.cardStack.add(_game.cardDeck.get(0));
         _game.cardDeck.remove(0);
-        MainFrame.refreshStack(_game.actualCard);
+        _mainFrame.refreshStack(_game.actualCard);
     }
 
     public void DealCards() {
