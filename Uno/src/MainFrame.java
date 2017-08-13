@@ -1,7 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -9,12 +8,14 @@ import java.util.*;
  */
 
 public class MainFrame extends JFrame {
-    Dimension mainSize = new Dimension(400, 400);
-    ImageIcon deckIcon;
-    static JLabel stackLabel;
-    static JPanel bottomPanel;
+    private Dimension mainSize = new Dimension(400, 400);
+    private ImageIcon deckIcon;
+    private static JLabel stackLabel;
+    private static JPanel bottomPanel;
     static JPanel topPanel;
     static JPanel mainPanel;
+
+    private JTextArea _protocol;
 
     public JPanel outputPanel;
     static Controller controller;
@@ -69,9 +70,17 @@ public class MainFrame extends JFrame {
 //        stackPanel.setBackground(Color.GREEN);
 //        JPanel deckPanel = new JPanel();
 //        deckPanel.setBackground(Color.YELLOW);
+
         topPanel.add(outputPanel);
+
 //        topPanel.add(stackPanel);
         topPanel.add(stackLabel);
+
+        _protocol = new JTextArea("Protokoll:");
+        _protocol.setBackground(this.getContentPane().getBackground());
+        _protocol.setEditable(false);
+        topPanel.add(_protocol);
+
         topPanel.add(deckButton);
 //        pack();
 
@@ -98,6 +107,7 @@ public class MainFrame extends JFrame {
 
         stackLabel.setText(topCard.get_color() + ", " + topCard.get_number());
         setColorOfUpperCard(topCard);
+        setVisible(true);
     }
 
     /**
@@ -120,6 +130,21 @@ public class MainFrame extends JFrame {
 
     public void Message(String message) {
         this.stackLabel.setText(message);
+    }
+
+    /**
+     * Schreibt einen String in das Protokoll feld in der Oberfläche
+     * sollte immer mittels SwingUtilities.invokeLater aufgerufen werden
+     *
+     * @param text Zeichenkette, die dem Protokoll hinzugefügt werden soll
+     */
+    public void writeToProtocol(String text) {
+
+        if (_protocol.getLineCount() > 10) {
+            _protocol.setText("Protokoll: ");
+        }
+        _protocol.append("\n" + text);
+        _protocol.setCaretPosition(_protocol.getDocument().getLength());
     }
 
     /**

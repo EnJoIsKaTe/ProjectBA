@@ -1,7 +1,6 @@
 import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 
 public class Controller implements MouseListener {
@@ -9,11 +8,11 @@ public class Controller implements MouseListener {
     private Game _game;
     private MainFrame _mainFrame;
 
-    public void initController(Game game, MainFrame mainFrame){
+
+    public void initController(Game game, MainFrame mainFrame) {
 
         _game = game;
         _mainFrame = mainFrame;
-
     }
 
     @Override
@@ -21,21 +20,24 @@ public class Controller implements MouseListener {
 
         // Unterscheiden ob Karte Ziehen oder Karte legen
         // Karte ziehen
-        if (mouseEvent.getSource() instanceof DrawButton){
+        if (mouseEvent.getSource() instanceof DrawButton) {
             drawCard();
 
-            playRound();
+            // spielt eine Runde mittels SwingWorker
+            new PlayRoundWorker(this).execute();
         }
 
         // Karte legen
-        if (mouseEvent.getSource() instanceof PlayerCardButton){
+        if (mouseEvent.getSource() instanceof PlayerCardButton) {
 
-            PlayerCardButton playerCardButton = (PlayerCardButton)mouseEvent.getSource();
+            PlayerCardButton playerCardButton = (PlayerCardButton) mouseEvent.getSource();
             UnoCard unoCard = playerCardButton.get_unoCard();
 
             if (_game.actualPlayer instanceof RealPlayer) {
-                if (realPlay(unoCard, (RealPlayer)_game.actualPlayer)){
-                    playRound();
+                if (realPlay(unoCard, (RealPlayer) _game.actualPlayer)) {
+
+                    // Eine Runde mittels SwingWorker spielen
+                    new PlayRoundWorker(this).execute();
                 }
             }
         }
@@ -45,11 +47,12 @@ public class Controller implements MouseListener {
 
     /**
      * Auspielen einer Karte durch einen realen Spieler
+     *
      * @param cardToPlay Karte die ausgespielt werden soll
-     * @param rPlayer Spieler Objekt des menschlichen Spielers
-     * @return
+     * @param rPlayer    Spieler Objekt des menschlichen Spielers
+     * @return Gibt an ob der Zug gelunge ist. Also ob die Karte auf der Hand ist und auf die liegende passt
      */
-    public boolean realPlay(UnoCard cardToPlay, RealPlayer rPlayer){
+    private boolean realPlay(UnoCard cardToPlay, RealPlayer rPlayer) {
 
         // wird true, wenn die Karte passt
         boolean validPlay = false;
@@ -57,16 +60,16 @@ public class Controller implements MouseListener {
         System.out.println("Zu spielende Karte: " + cardToPlay.get_color() + ", " + cardToPlay.get_number());
 
         boolean isOnHand = false;
-        for(UnoCard c : rPlayer.cardsOnHand){
-            if(cardToPlay.equals(c)){
+        for (UnoCard c : rPlayer.cardsOnHand) {
+            if (cardToPlay.equals(c)) {
                 cardToPlay = c;
                 isOnHand = true;
             }
         }
 
-        if(isOnHand){
+        if (isOnHand) {
             System.out.println("Auf Hand");
-            if(_game.actualCard.fits(cardToPlay)){
+            if (_game.actualCard.fits(cardToPlay)) {
                 System.out.println("Karte passt");
                 _game.actualCard = cardToPlay;
                 _mainFrame.refreshStack(_game.actualCard);
@@ -81,8 +84,7 @@ public class Controller implements MouseListener {
                 System.out.println("Bereits " + _game.cardStack.size() + " Karten auf Haufen");
                 System.out.println();
                 validPlay = true;
-            }
-            else{
+            } else {
                 validPlay = false;
                 System.out.println("Karte passt nicht. Bitte wählen Sie erneut oder Ziehen Sie eine Karte");
             }
@@ -92,23 +94,25 @@ public class Controller implements MouseListener {
 
     /**
      * Auspielen einer Karte durch einen virtuellen Spieler
+     *
      * @param vPlayer
      */
-    public void virtualPlay(VirtualPlayer vPlayer) {
-
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                _mainFrame.refreshStack(_game.actualCard);
-
-            }
-        };
+    private void virtualPlay(VirtualPlayer vPlayer) {
 
         boolean cardFits = false;
         for (UnoCard c : vPlayer.cardsOnHand) {
             if (_game.actualCard.fits(c)) {
                 _game.actualCard = c;
-                //_mainFrame.refreshStack(_game.actualCard);
+
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+
+                        _mainFrame.refreshStack(_game.actualCard);
+
+                        _mainFrame.writeToProtocol(vPlayer.get_name() + " spielt: " + c.get_color() + ", " + c.get_number());
+                    }
+                };
 
                 SwingUtilities.invokeLater(runnable);
 
@@ -127,16 +131,20 @@ public class Controller implements MouseListener {
     /**
      * Karte ziehen
      */
-    public void drawCard(){
-        if(_game.cardDeck.size() < 1)
-        {
-            for(int i = 0; i < _game.cardStack.size(); i++)
-            {
+    private void drawCard() {
+        if (_game.cardDeck.size() < 1) {
+            for (int i = 0; i < _game.cardStack.size(); i++) {
                 _game.cardDeck.add(_game.cardStack.get(i));
             }
             _game.cardStack.clear();
             Collections.shuffle(_game.cardDeck);
         }
+
+        // hier eine coole Syntax für das schreiben eines runnable, die intelliJ vorgeschlagen hat
+        Runnable runnable = () -> _mainFrame.writeToProtocol(_game.actualPlayer.get_name() + " hat gezogen");
+
+        SwingUtilities.invokeLater(runnable);
+
         UnoCard drawedCard = _game.cardDeck.get(0);
         _game.actualPlayer.cardsOnHand.add(drawedCard);
         _game.cardDeck.remove(drawedCard);
@@ -145,20 +153,31 @@ public class Controller implements MouseListener {
     /**
      * Spielen einer Runde, wenn der menschliche Spieler dran ist wird aus der Methode gesprungen
      */
-    public void playRound(){
+    public void playRound() {
         // Spiele eine Runde
-        for(int position = 0; position < _game.players.size(); position++) {
+
+        for (int position = 0; position < _game.players.size(); position++) {
+
             _game.actualPlayer = _game.players.get(position);
             System.out.print("Liegende Karte: ");
             System.out.println(_game.actualCard.get_color() + ", " + _game.actualCard.get_number());
             System.out.print("Spieler: ");
             System.out.println(_game.actualPlayer.get_name());
-            if(_game.actualPlayer.cardsOnHand.size() < 2 && _game.actualPlayer.cardsOnHand.size() > 0)
-            {
+
+
+            SwingUtilities.invokeLater(() -> _mainFrame.writeToProtocol(_game.actualPlayer.get_name() + " ist am Zug"));
+
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+
+            if (_game.actualPlayer.cardsOnHand.size() < 2 && _game.actualPlayer.cardsOnHand.size() > 0) {
                 System.out.println("UNO!!!!");
             }
-            if(_game.actualPlayer.cardsOnHand.size() < 1)
-            {
+            if (_game.actualPlayer.cardsOnHand.size() < 1) {
                 System.out.println("GEWONNEN!!!!!!!!!");
                 String message = _game.actualPlayer.get_name();
                 message += " hat gewonnen!";
@@ -172,13 +191,13 @@ public class Controller implements MouseListener {
 
             // Prüfe, ob Karte passt
 
-            if (_game.actualPlayer instanceof VirtualPlayer)
-            {
-                virtualPlay((VirtualPlayer)_game.actualPlayer);
+            if (_game.actualPlayer instanceof VirtualPlayer) {
+
+                virtualPlay((VirtualPlayer) _game.actualPlayer);
             }
 
             // bricht hier ab wenn es ein echter Spieler ist und wartet auf das Event
-            else if (_game.actualPlayer instanceof RealPlayer){
+            else if (_game.actualPlayer instanceof RealPlayer) {
                 return;
             }
 
@@ -216,7 +235,7 @@ public class Controller implements MouseListener {
         _game.cardDeck.add(new UnoCard(0, "yellow"));
     }
 
-    public void uncoverFirstCard(){
+    public void uncoverFirstCard() {
         _game.actualCard = _game.cardDeck.get(0);
         _game.cardStack.add(_game.cardDeck.get(0));
         _game.cardDeck.remove(0);
