@@ -157,8 +157,7 @@ public class Controller implements MouseListener {
             if (_game.actualCard.fits(c)) {
                 _game.actualCard = c;
 
-                final String protocol = vPlayer.get_name() + " hat " + vPlayer.cardsOnHand.size() + " Karten.\n"
-                        + " spielt: " + c.get_color() + ", " + c.get_number();
+                final String protocol = vPlayer.get_name() + " spielt: " + c.get_color() + ", " + c.get_number();
 
                 Runnable runnable = new Runnable() {
                     @Override
@@ -227,7 +226,16 @@ public class Controller implements MouseListener {
             System.out.print("Spieler: ");
             System.out.println(_game.actualPlayer.get_name());
 
-            final String protocol = _game.actualPlayer.get_name() + " ist am Zug";
+            final String protocol;
+            if(_game.actualPlayer instanceof VirtualPlayer){
+                protocol = _game.actualPlayer.get_name() + " ist am Zug.\n"
+                        + _game.actualPlayer.get_name() + " hat " + _game.actualPlayer.cardsOnHand.size() + " Karten.";
+            }
+            else{
+                protocol = "Du bist am Zug.\n";
+            }
+
+
 
             try {
                 SwingUtilities.invokeAndWait(new Runnable() {
@@ -244,11 +252,23 @@ public class Controller implements MouseListener {
 
             // Pause, wenn bei den nicht-menschlichen Spielern
             if (_game.actualPlayer instanceof VirtualPlayer){
-
-                insertDelay(1500);
+                insertDelay(800);
             }
 
             if (_game.actualPlayer.cardsOnHand.size() < 2 && _game.actualPlayer.cardsOnHand.size() > 0) {
+                try {
+                    SwingUtilities.invokeAndWait(new Runnable() {
+                        @Override
+                        public void run() {
+                            _mainFrame.writeToProtocol("UNO!!!");
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+
                 System.out.println("UNO!!!!");
             }
             if (_game.actualPlayer.cardsOnHand.size() < 1) {
