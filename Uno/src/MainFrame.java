@@ -57,7 +57,7 @@ public class MainFrame extends JFrame {
         //final JButton deckButton = new JButton();
         DrawButton deckButton = new DrawButton();
 
-        deckIcon = new ImageIcon(getClass().getResource("images/Back2Free.jpg"));
+        deckIcon = new ImageIcon(getClass().getResource("images/Back1.png"));
         Image img = deckIcon.getImage();
 
         Image newimg = img.getScaledInstance(175, 350,
@@ -123,7 +123,16 @@ public class MainFrame extends JFrame {
         for (UnoCard c : playerCards) {
             PlayerCardButton playerCard = new PlayerCardButton(c);
             playerCard.addMouseListener(controller);
-            playerCard.setText(c.get_color() + ", " + c.get_number());
+            playerCard.setFont(new Font("Arial", Font.BOLD, 40));
+            playerCard.setText(String.valueOf(c.get_number()));
+            Color cardColor;
+            try {
+                Field field = Class.forName("java.awt.Color").getField(c.get_color());
+                cardColor = (Color)field.get(null);
+            } catch (Exception e) {
+                cardColor = null; // Not defined
+            }
+            playerCard.setBackground(cardColor);
             bottomPanel.add(playerCard);
         }
         bottomPanel.repaint();

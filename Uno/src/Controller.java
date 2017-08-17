@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 
 public class Controller implements MouseListener {
@@ -22,6 +23,8 @@ public class Controller implements MouseListener {
      */
     @Override
     public void mouseClicked(MouseEvent mouseEvent) {
+
+        System.out.println("Ist EDT?: " + SwingUtilities.isEventDispatchThread());
 
         boolean repaint = false;
         // Unterscheiden ob Karte Ziehen oder Karte legen
@@ -60,7 +63,7 @@ public class Controller implements MouseListener {
             PlayerCardButton playerCardButton = (PlayerCardButton) mouseEvent.getSource();
             UnoCard unoCard = playerCardButton.get_unoCard();
 
-            if (_game.actualPlayer instanceof RealPlayer) {
+//            if (_game.actualPlayer instanceof RealPlayer) {
                 if (realPlay(unoCard, (RealPlayer) _game.actualPlayer)) {
 
                     _isHumanPlayersTurn = false;
@@ -69,23 +72,23 @@ public class Controller implements MouseListener {
                     // Eine Runde mittels SwingWorker spielen
                     new PlayRoundWorker(this).execute();
                 }
-            }
+//            }
             // Zwischenwerfen einer Karte, wenn man nicht dran ist
-            else {
-
-                for (Player humanPlayer : _game.players) {
-
-                    if (humanPlayer instanceof RealPlayer) {
-
-                        if (realPlay(unoCard, (RealPlayer) humanPlayer)) {
-
-                            _mainFrame.repaintPlayerCards(humanPlayer.cardsOnHand);
-                            _mainFrame.setVisible(true);
-                            repaint = false;
-                        }
-                    }
-                }
-            }
+//            else {
+//
+//                for (Player humanPlayer : _game.players) {
+//
+//                    if (humanPlayer instanceof RealPlayer) {
+//
+//                        if (realPlay(unoCard, (RealPlayer) humanPlayer)) {
+//
+//                            _mainFrame.repaintPlayerCards(humanPlayer.cardsOnHand);
+//                            _mainFrame.setVisible(true);
+//                            repaint = false;
+//                        }
+//                    }
+//                }
+//            }
         }
             if (repaint) {
 
@@ -154,7 +157,8 @@ public class Controller implements MouseListener {
             if (_game.actualCard.fits(c)) {
                 _game.actualCard = c;
 
-                final String protocol = vPlayer.get_name() + " spielt: " + c.get_color() + ", " + c.get_number();
+                final String protocol = vPlayer.get_name() + " hat " + vPlayer.cardsOnHand.size() + " Karten.\n"
+                        + " spielt: " + c.get_color() + ", " + c.get_number();
 
                 Runnable runnable = new Runnable() {
                     @Override
@@ -223,20 +227,25 @@ public class Controller implements MouseListener {
             System.out.print("Spieler: ");
             System.out.println(_game.actualPlayer.get_name());
 
-
             final String protocol = _game.actualPlayer.get_name() + " ist am Zug";
 
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    _mainFrame.writeToProtocol(protocol);
-                }
-            });
+            try {
+                SwingUtilities.invokeAndWait(new Runnable() {
+                    @Override
+                    public void run() {
+                        _mainFrame.writeToProtocol(protocol);
+                    }
+                });
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
 
             // Pause, wenn bei den nicht-menschlichen Spielern
             if (_game.actualPlayer instanceof VirtualPlayer){
 
-                insertDelay(4000);
+                insertDelay(1500);
             }
 
             if (_game.actualPlayer.cardsOnHand.size() < 2 && _game.actualPlayer.cardsOnHand.size() > 0) {
