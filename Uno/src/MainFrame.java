@@ -57,9 +57,10 @@ public class MainFrame extends JFrame {
         //final JButton deckButton = new JButton();
         DrawButton deckButton = new DrawButton();
 
-        deckIcon = new ImageIcon(getClass().getResource("images/Back1.png"));
+        deckIcon = new ImageIcon(getClass().getResource("images/Back2Free.jpg"));
         Image img = deckIcon.getImage();
-        Image newimg = img.getScaledInstance(50, 100,
+
+        Image newimg = img.getScaledInstance(175, 350,
                 java.awt.Image.SCALE_SMOOTH);
         deckIcon = new ImageIcon(newimg);
         deckButton.setIcon(deckIcon);
