@@ -16,9 +16,9 @@ public class UnoCard {
     }
 
 
-    public UnoCard(int _number, String _color) {
-        this._number = _number;
-        this._color = _color;
+    public UnoCard(int number, String color) {
+        this._number = number;
+        this._color = color;
     }
 
     public boolean equals(UnoCard card) {
