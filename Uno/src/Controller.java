@@ -36,11 +36,10 @@ public class Controller implements MouseListener {
                 drawCard(_game.actualPlayer);
 
                 _isHumanPlayersTurn = false;
-
+              
                 repaint = true;
                 // spielt eine Runde mittels SwingWorker
                 new PlayRoundWorker(this).execute();
-
             } else {
 
                 for (Player humanPlayer : _game.players) {
@@ -235,8 +234,6 @@ public class Controller implements MouseListener {
                 protocol = "Du bist am Zug.\n";
             }
 
-
-
             try {
                 SwingUtilities.invokeAndWait(new Runnable() {
                     @Override
@@ -268,7 +265,6 @@ public class Controller implements MouseListener {
                 } catch (InvocationTargetException e) {
                     e.printStackTrace();
                 }
-
                 System.out.println("UNO!!!!");
             }
             if (_game.actualPlayer.cardsOnHand.size() < 1) {
