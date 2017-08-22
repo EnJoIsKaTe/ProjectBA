@@ -150,7 +150,8 @@ public class MainFrame extends JFrame {
      */
     public void writeToProtocol(String text) {
 
-        if (_protocol.getLineCount() > 10) {
+      if (_protocol.getLineCount() > 16) {
+
             _protocol.setText("Protokoll: ");
         }
         _protocol.append("\n" + text);
