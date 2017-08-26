@@ -152,7 +152,9 @@ public class MainFrame extends JFrame {
      * @param text Zeichenkette, die dem Protokoll hinzugefügt werden soll
      */
     public void writeToProtocol(String text) {
-        if (_protocol.getLineCount() > 16) {
+
+      if (_protocol.getLineCount() > 16) {
+
             _protocol.setText("Protokoll: ");
         }
         _protocol.append("\n" + text);

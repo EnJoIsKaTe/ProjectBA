@@ -2,6 +2,8 @@ import java.io.IOException;
 
 public class Main {
 
+    // Zum Testen von Push / Pull
+
     private static MainFrame _mainFrame;
 
     public static void main(String[] args) throws IOException {
