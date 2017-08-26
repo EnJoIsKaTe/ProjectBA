@@ -11,24 +11,20 @@ public class Main {
         Player ich = new RealPlayer("Ich");
 
         Controller controller = new Controller();
-        _mainFrame = new MainFrame(controller);
+        controller.initController();
 
-        Game game  = new Game(controller);
-        controller.initController(game, _mainFrame);
+        controller.game.addPlayer(0, paul);
+        controller.game.addPlayer(1, karl);
+        controller.game.addPlayer(2, ich);
 
-        game.addPlayer(0, paul);
-        game.addPlayer(1, karl);
-        game.addPlayer(2, ich);
+        controller.game.CreateCards();
+        controller.game.Shuffle();
+        controller.game.DealCards();
 
-        controller.CreateCards();
-        game.Shuffle();
-        controller.DealCards();
+        controller.mainFrame.repaintPlayerCards(ich.cardsOnHand);
 
-        _mainFrame.repaintPlayerCards(ich.cardsOnHand);
+        controller.game.uncoverFirstCard();
 
-        // Erste Karte aufdecken
-        controller.uncoverFirstCard();
-
-        controller.playRound();
+        controller.game.playRound();
     }
 }

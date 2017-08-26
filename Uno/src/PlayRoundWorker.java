@@ -3,11 +3,11 @@ import javax.swing.*;
 
 public class PlayRoundWorker extends SwingWorker<Void, Object> {
 
-    private Controller _controller;
+    private Controller controller;
 
     public PlayRoundWorker(Controller controller) {
 
-        _controller = controller;
+        this.controller = controller;
     }
 
     /**
@@ -18,7 +18,7 @@ public class PlayRoundWorker extends SwingWorker<Void, Object> {
     @Override
     protected Void doInBackground() {
 
-        _controller.playRound();
+        controller.game.playRound();
 
         return null;
     }

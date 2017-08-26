@@ -123,8 +123,9 @@ public class MainFrame extends JFrame {
         for (UnoCard c : playerCards) {
             PlayerCardButton playerCard = new PlayerCardButton(c);
             playerCard.addMouseListener(controller);
-            playerCard.setFont(new Font("Arial", Font.BOLD, 40));
-            playerCard.setText(String.valueOf(c.get_number()));
+            playerCard.setFont(new Font("Arial", Font.BOLD, 22));
+//            playerCard.setText(String.valueOf(c.get_number()));
+            playerCard.setText(c.get_color() + "\n" + c.get_number());
             Color cardColor;
             try {
                 Field field = Class.forName("java.awt.Color").getField(c.get_color());
@@ -133,6 +134,8 @@ public class MainFrame extends JFrame {
                 cardColor = null; // Not defined
             }
             playerCard.setBackground(cardColor);
+//            playerCard.setForeground(cardColor);
+            playerCard.setOpaque(true);
             bottomPanel.add(playerCard);
         }
         bottomPanel.repaint();
